@@ -9,6 +9,9 @@ sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
 # install nginx exclude debian
 sudo DEBIAN_FRONTEND=noninteractive apt-get install nginx -y
 
+# create the reverse proxy
+sudo sed -i '/location \/ {/a \           proxy_pass http://localhost:3000;' /etc/nginx/sites-available/default
+
 # restart nginx
 sudo systemctl restart nginx
 
@@ -24,17 +27,14 @@ sudo DEBIAN_FRONTEND=noninteractive bash setup_nodejs.sh
 # install nodejs
 sudo DEBIAN_FRONTEND=noninteractive apt install nodejs -y
 
-# install unzip
-sudo DEBIAN_FRONTEND=noninteractive apt install unzip -y
+# # install unzip
+# sudo DEBIAN_FRONTEND=noninteractive apt install unzip -y
 
 # download sparta-app from github
 git clone https://github.com/Bag3ll/sparta-app.git
 
-# cd into sparta-app
-cd sparta-app
-
-# unzip folder
-unzip nodejs20-sparta-test-app.zip
+# # unzip folder
+# unzip nodejs20-sparta-test-app.zip
 
 # set enviroment variables
 export DB_HOST=mongodb://10.0.3.4:27017/posts
@@ -42,13 +42,16 @@ export DB_HOST=mongodb://10.0.3.4:27017/posts
 # make enviroment variable persist through restart
 echo 'export DB_HOST=mongodb://10.0.3.4:27017/posts' >> ~/.bashrc
 
+# cd into sparta-app
+cd sparta-app
+
 # go into app folder
 cd app
 
 # install app
 npm install
 
-#
+# populate database
 node seeds/seed.js
 
 # start app
