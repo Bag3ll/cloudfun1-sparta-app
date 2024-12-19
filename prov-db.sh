@@ -1,17 +1,20 @@
 #!/bin/bash
 
+#
+
+
 # update
 sudo apt update -y
 
 # upgrade exclude debian
 sudo DEBIAN_FRONTEND=noninteractive apt upgrade -y
 
-# install mongoDB
+# install gnupg and curl if not already installed
 sudo DEBIAN_FRONTEND=noninteractive apt-get install gnupg curl
 
 # import MongoDB public GPG key
 curl -fsSL https://www.mongodb.org/static/pgp/server-7.0.asc | \
-    sudo gpg -o /usr/share/keyrings/mongodb-server-7.0.gpg \
+    sudo gpg --yes -o /usr/share/keyrings/mongodb-server-7.0.gpg \
     --dearmor
 
 # create the list file
@@ -34,12 +37,13 @@ echo "mongodb-org-tools hold" | sudo dpkg --set-selections
 # start MongoDB
 sudo systemctl start mongod
 
-# edit conf file ip
-sudo sed -i 's/127.0.0.1/0.0.0.0/' /etc/mongod.conf
+# edit conf file ip for testing to accept any
+sudo sed -i 's/bindIp: 127.0.0.1/bindIp: 0.0.0.0/' /etc/mongod.conf
 
 # restart MongoDB
 sudo systemctl restart mongod
 
 # enable MongoDB on startup
+echo enable mongod ...
 sudo systemctl enable mongod
-
+echo done!
